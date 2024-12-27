@@ -1,3 +1,4 @@
+// Manages state and Firebase operations for grocery items
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -6,15 +7,16 @@ import 'dart:io';
 class GroceryProvider with ChangeNotifier {
   final _firestore = FirebaseFirestore.instance;
 
+  // Adds a new grocery item to Firestore with image
   Future<void> addGroceryItem(
       String name, String quantity, String imagePath) async {
     try {
-      // Convert image to base64
+      // Convert image to base64 for storage
       File imageFile = File(imagePath);
       List<int> imageBytes = await imageFile.readAsBytes();
       String base64Image = 'data:image/jpeg;base64,${base64Encode(imageBytes)}';
 
-      // Save to Firestore
+      // Create document in Firestore with item details
       await _firestore.collection('groceries').add({
         'name': name,
         'quantity': quantity,
@@ -29,6 +31,7 @@ class GroceryProvider with ChangeNotifier {
     }
   }
 
+  // Stream of grocery items ordered by timestamp
   Stream<QuerySnapshot> fetchGroceries() {
     return _firestore
         .collection('groceries')
@@ -36,6 +39,7 @@ class GroceryProvider with ChangeNotifier {
         .snapshots();
   }
 
+  // Updates the status of a grocery item
   Future<void> updateStatus(String documentId, String newStatus) async {
     try {
       await _firestore

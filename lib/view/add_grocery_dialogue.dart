@@ -1,9 +1,9 @@
+// Dialog for adding new grocery items
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
-
-import 'grocery_provider.dart';
+import '../controller/grocery_provider.dart';
 
 class AddGroceryDialog extends StatefulWidget {
   const AddGroceryDialog({Key? key}) : super(key: key);
@@ -13,6 +13,7 @@ class AddGroceryDialog extends StatefulWidget {
 }
 
 class _AddGroceryDialogState extends State<AddGroceryDialog> {
+  // Controllers and state variables
   final _nameController = TextEditingController();
   final _quantityController = TextEditingController();
   File? _selectedImage;
@@ -31,13 +32,15 @@ class _AddGroceryDialogState extends State<AddGroceryDialog> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // Dialog title
                 Text(
                   'Add Grocery Item',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 20),
+                // Item name input field
                 TextFormField(
                   controller: _nameController,
                   decoration: InputDecoration(
@@ -57,9 +60,10 @@ class _AddGroceryDialogState extends State<AddGroceryDialog> {
                   },
                 ),
                 const SizedBox(height: 16),
+                // Quantity input field
                 TextFormField(
                   controller: _quantityController,
-                  keyboardType: TextInputType.number, // Numeric input
+                  keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     labelText: 'Quantity',
                     border: OutlineInputBorder(
@@ -83,11 +87,12 @@ class _AddGroceryDialogState extends State<AddGroceryDialog> {
                   },
                 ),
                 const SizedBox(height: 20),
+                // Image picker
                 GestureDetector(
                   onTap: () async {
                     final picker = ImagePicker();
                     final pickedImage =
-                        await picker.pickImage(source: ImageSource.gallery);
+                    await picker.pickImage(source: ImageSource.gallery);
                     if (pickedImage != null) {
                       setState(() {
                         _selectedImage = File(pickedImage.path);
@@ -104,83 +109,83 @@ class _AddGroceryDialogState extends State<AddGroceryDialog> {
                     ),
                     child: _selectedImage != null
                         ? ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Image.file(
-                              _selectedImage!,
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                              height: 150,
-                            ),
-                          )
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.file(
+                        _selectedImage!,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: 150,
+                      ),
+                    )
                         : Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              Icon(Icons.add_photo_alternate,
-                                  size: 40, color: Colors.grey),
-                              SizedBox(height: 8),
-                              Text('Select Image',
-                                  style: TextStyle(color: Colors.grey)),
-                            ],
-                          ),
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(Icons.add_photo_alternate,
+                            size: 40, color: Colors.grey),
+                        SizedBox(height: 8),
+                        Text('Select Image',
+                            style: TextStyle(color: Colors.grey)),
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 20),
+                // Action buttons
                 _isLoading
                     ? const CircularProgressIndicator()
                     : Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text('Cancel'),
-                          ),
-                          const SizedBox(width: 8),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 12),
-                            ),
-                            onPressed: () async {
-                              if (_formKey.currentState!.validate() &&
-                                  _selectedImage != null) {
-                                setState(() {
-                                  _isLoading = true; // Start loading
-                                });
-                                Navigator.pop(
-                                    context); // Close the dialog immediately
-                                try {
-                                  await Provider.of<GroceryProvider>(context,
-                                          listen: false)
-                                      .addGroceryItem(
-                                    _nameController.text,
-                                    _quantityController.text,
-                                    _selectedImage!.path,
-                                  );
-                                } catch (e) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                        content:
-                                            Text('Failed to add item: $e')),
-                                  );
-                                } finally {
-                                  setState(() {
-                                    _isLoading = false; // Stop loading
-                                  });
-                                }
-                              } else if (_selectedImage == null) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text('Please select an image')),
-                                );
-                              }
-                            },
-                            child: const Text('Add Item'),
-                          ),
-                        ],
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Cancel'),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 12),
                       ),
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate() &&
+                            _selectedImage != null) {
+                          setState(() {
+                            _isLoading = true;
+                          });
+                          Navigator.pop(context);
+                          try {
+                            await Provider.of<GroceryProvider>(context,
+                                listen: false)
+                                .addGroceryItem(
+                              _nameController.text,
+                              _quantityController.text,
+                              _selectedImage!.path,
+                            );
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content:
+                                  Text('Failed to add item: $e')),
+                            );
+                          } finally {
+                            setState(() {
+                              _isLoading = false;
+                            });
+                          }
+                        } else if (_selectedImage == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Please select an image')),
+                          );
+                        }
+                      },
+                      child: const Text('Add Item'),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),

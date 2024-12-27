@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'add_grocery_dialogue.dart';
-import 'grocery_list.dart';
+import '../widget/grocery_list.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -8,7 +8,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white60,
+      backgroundColor: Colors.white30,
       appBar: AppBar(
         backgroundColor: Colors.blue,
         title: const Text(
@@ -16,13 +16,16 @@ class HomeScreen extends StatelessWidget {
           style: TextStyle(
             color: Colors.yellowAccent,
             fontSize: 25,
-            fontWeight: FontWeight.bold, // Corrected FontWeight
+            fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
       ),
+      // Main content showing list of groceries
       body: const GroceryList(),
+      // FAB to add new items
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.blue,
         onPressed: () {
           showDialog(
             context: context,
